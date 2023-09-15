@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"api/internal/user"
 	"log"
 	"net/http"
 	"time"
@@ -11,9 +11,13 @@ import (
 
 func main() {
 	router := mux.NewRouter()
+	userEnd := user.MakeEndPoints()
 
-	router.HandleFunc("/users", getUsers).Methods("GET")
-	router.HandleFunc("/courses", getCourses).Methods("GET")
+	router.HandleFunc("/users", userEnd.Create).Methods("POST")
+	router.HandleFunc("/users", userEnd.GetAll).Methods("GET")
+	router.HandleFunc("/users", userEnd.Get).Methods("GET")
+	router.HandleFunc("/users", userEnd.Update).Methods("PATCH")
+	router.HandleFunc("/users", userEnd.Delete).Methods("DELETE")
 
 	srv := &http.Server{
 		Handler: router,
@@ -32,13 +36,4 @@ func main() {
 
 	}
 
-}
-
-func getUsers(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(6 * time.Second)
-	json.NewEncoder(w).Encode(map[string]bool{"ok": true})
-}
-
-func getCourses(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 }
