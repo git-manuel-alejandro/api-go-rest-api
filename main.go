@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/internal/user"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -11,7 +12,8 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	userEnd := user.MakeEndPoints()
+	userSrv := user.NewService()
+	userEnd := user.MakeEndPoints(userSrv)
 
 	router.HandleFunc("/users", userEnd.Create).Methods("POST")
 	router.HandleFunc("/users", userEnd.GetAll).Methods("GET")
@@ -26,6 +28,7 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
+	fmt.Println("server running ...")
 
 	err := srv.ListenAndServe()
 

@@ -1,0 +1,4 @@
+# api
+.\main.go:15:13: not enough arguments in call to user.MakeEndPoints
+	have ()
+	want (user.Service)
