@@ -17,6 +17,7 @@ import (
 func main() {
 	router := mux.NewRouter()
 	_ = godotenv.Load()
+	l := log.New(os.Stdout, "prefix => ", log.LstdFlags|log.Lshortfile)
 	dsn := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		os.Getenv("DATABASE_USER"),
 		os.Getenv("DATABASE_PASSWORD"),
@@ -32,8 +33,8 @@ func main() {
 
 	fmt.Println(dsn)
 
-	userRepo := user.NewRepo(db)
-	userSrv := user.NewService(userRepo)
+	userRepo := user.NewRepo(l, db)
+	userSrv := user.NewService(l, userRepo)
 	userEnd := user.MakeEndPoints(userSrv)
 
 	router.HandleFunc("/users", userEnd.Create).Methods("POST")

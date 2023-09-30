@@ -1,7 +1,7 @@
 package user
 
 import (
-	"fmt"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -11,18 +11,20 @@ type Repository interface {
 }
 
 type repo struct {
-	db *gorm.DB
+	log *log.Logger
+	db  *gorm.DB
 }
 
-func NewRepo(db *gorm.DB) Repository {
+func NewRepo(log *log.Logger, db *gorm.DB) Repository {
 	return &repo{
-		db: db,
+		log: log,
+		db:  db,
 	}
 }
 
 func (repo *repo) Create(user *User) error {
 
-	fmt.Println("create user repository")
+	repo.log.Println("create user repository")
 	return nil
 
 }
