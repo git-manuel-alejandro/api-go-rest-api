@@ -5,14 +5,35 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
 	router := mux.NewRouter()
-	userSrv := user.NewService()
+	_ = godotenv.Load()
+	dsn := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		os.Getenv("DATABASE_USER"),
+		os.Getenv("DATABASE_PASSWORD"),
+		os.Getenv("DATABASE_HOST"),
+		os.Getenv("DATABASE_PORT"),
+		os.Getenv("DATABASE_NAME"))
+
+	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	db = db.Debug()
+
+	_ = db.AutoMigrate(&user.User{})
+
+	fmt.Println(dsn)
+
+	userRepo := user.NewRepo(db)
+	userSrv := user.NewService(userRepo)
 	userEnd := user.MakeEndPoints(userSrv)
 
 	router.HandleFunc("/users", userEnd.Create).Methods("POST")
